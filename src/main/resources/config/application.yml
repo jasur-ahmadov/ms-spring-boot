@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: ms-spring-boot
+  messages:
+    basename: i18n/messages
+    encoding: UTF-8
+  profiles:
+    active: local
+    include:
+      - common
+      - db
+      - security
+      - logging
+
+server:
+  servlet:
+    context-path: /api/v1/ms17

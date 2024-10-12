@@ -1,0 +1,4 @@
+#logging:
+#  level:
+#    ROOT: WARN
+#    com.example.logging: DEBUG
