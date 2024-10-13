@@ -73,6 +73,7 @@ class StudentControllerTest {
                 .andExpect(jsonPath("$.surname").value(student.getSurname()));
 
         verify(studentService, times(1)).findById(ID);
+        verifyNoMoreInteractions(studentService);
     }
 
     @Test

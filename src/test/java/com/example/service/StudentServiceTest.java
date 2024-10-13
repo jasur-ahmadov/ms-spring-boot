@@ -37,12 +37,16 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class StudentServiceTest {
+
     private static Student student;
     private static StudentDTO studentDTO;
+
     @Mock
     private StudentRepository studentRepository;
+
     @Mock
     private StudentMapper studentMapper;
+
     @InjectMocks
     private StudentService studentService;
 
@@ -65,6 +69,8 @@ class StudentServiceTest {
 
         assertEquals(expected, actual);
         verify(studentRepository, times(1)).findById(ID);
+        verifyNoMoreInteractions(studentRepository);
+        verifyNoInteractions(studentMapper);
     }
 
     @Test
@@ -117,6 +123,8 @@ class StudentServiceTest {
         assertEquals(1, result.size());
         assertEquals("Jasur", result.get(0).getName());
         verify(studentRepository, times(1)).findAll();
+        verifyNoMoreInteractions(studentRepository);
+        verifyNoInteractions(studentMapper);
     }
 
     @Test
@@ -140,6 +148,8 @@ class StudentServiceTest {
         assertEquals(ResponseEntity.ok(student), response);
         verify(studentRepository, times(1)).findById(anyLong());
         verify(studentRepository, times(1)).save(any(Student.class));
+        verifyNoMoreInteractions(studentRepository);
+        verifyNoInteractions(studentMapper);
     }
 
     @Test
@@ -148,6 +158,7 @@ class StudentServiceTest {
         ResponseEntity<Student> response = studentService.patch(1L, new HashMap<>());
         assertEquals(ResponseEntity.notFound().build(), response);
         verify(studentRepository, times(1)).findById(anyLong());
-        verify(studentRepository, never()).save(any());
+        verifyNoMoreInteractions(studentRepository);
+        verifyNoInteractions(studentMapper);
     }
 }
