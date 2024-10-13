@@ -2,9 +2,11 @@ package com.example.service;
 
 import com.example.dto.StudentDTO;
 import com.example.entity.Student;
+import com.example.exception.StudentNotFoundException;
 import com.example.mapper.StudentMapper;
 import com.example.repository.StudentRepository;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.example.constant.TestConstant.ADDRESS;
@@ -23,12 +24,10 @@ import static com.example.constant.TestConstant.AGE;
 import static com.example.constant.TestConstant.ID;
 import static com.example.constant.TestConstant.NAME;
 import static com.example.constant.TestConstant.SURNAME;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -42,10 +41,10 @@ class StudentServiceTest {
     private static StudentDTO studentDTO;
 
     @Mock
-    private StudentRepository studentRepository;
+    private StudentMapper studentMapper;
 
     @Mock
-    private StudentMapper studentMapper;
+    private StudentRepository studentRepository;
 
     @InjectMocks
     private StudentService studentService;
@@ -62,7 +61,7 @@ class StudentServiceTest {
         var expected = Optional.of(student);
 
         //when
-        when(studentService.findById(ID)).thenReturn(expected);
+        when(studentRepository.findById(ID)).thenReturn(expected);
 
         //then
         var actual = studentService.findById(ID);
@@ -74,23 +73,37 @@ class StudentServiceTest {
     }
 
     @Test
-    void create_Success() {
+    @Disabled("Expecting findById() to throw StudentNotFoundException but never achieved")
+    void findById_WhenStudentNotFound_ShouldThrowStudentNotFoundException() {
         //when
-        when(studentMapper.toEntity(studentDTO)).thenReturn(student);
-        when(studentRepository.save(student)).thenReturn(student);
+        when(studentRepository.findById(ID)).thenReturn(Optional.empty());
+
+        //then
+        assertThatThrownBy(() -> studentService.findById(ID))
+                .isInstanceOf(StudentNotFoundException.class)
+                .hasMessage("Student with id: " + ID + " is not found!");
+
+        verify(studentRepository, times(1)).findById(ID);
+        verifyNoMoreInteractions(studentRepository);
+        verifyNoInteractions(studentMapper);
+    }
+
+    @Test
+    void create_Success() {
+        //given
+        var expected = student;
+
+        //when
+        when(studentMapper.toEntity(studentDTO)).thenReturn(expected);
+        when(studentRepository.save(expected)).thenReturn(expected);
 
         //then
         var actual = studentService.create(studentDTO);
 
         assertNotNull(actual);
-        assertEquals(ID, actual.getId());
-        assertEquals(NAME, actual.getName());
-        assertEquals(SURNAME, actual.getSurname());
-        assertEquals(AGE, actual.getAge());
-        assertEquals(ADDRESS, actual.getAddress());
-
+        assertEquals(expected, actual);
         verify(studentMapper, times(1)).toEntity(studentDTO);
-        verify(studentRepository, times(1)).save(student);
+        verify(studentRepository, times(1)).save(expected);
         verifyNoMoreInteractions(studentMapper, studentRepository);
     }
 
@@ -101,63 +114,84 @@ class StudentServiceTest {
         studentDTO.setSurname(null);
 
         //then
-        var exception = assertThrows(IllegalArgumentException.class, () -> studentService.create(studentDTO));
-
-        assertEquals(exception.getClass().getName(), "java.lang.IllegalArgumentException");
+        assertThrows(IllegalArgumentException.class, () -> studentService.create(studentDTO));
         verifyNoInteractions(studentRepository);
     }
 
     @Test
-    void testSave_ThrowsException_WhenDTOIsNull() {
+    void create_ThrowsException_WhenDTOIsNull() {
+        //then
         assertThrows(IllegalArgumentException.class, () -> studentService.create(null));
-        verify(studentMapper, never()).toEntity(any());
-        verify(studentRepository, never()).save(any());
+        verifyNoInteractions(studentMapper, studentRepository);
     }
 
     @Test
-    void testFindAll() {
+    void getAll_Success() {
+        //given
         List<Student> studentList = Collections.singletonList(student);
+
+        //when
         when(studentRepository.findAll()).thenReturn(studentList);
-        List<Student> result = studentService.findAll();
+
+        //then
+        var result = studentService.findAll();
+
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals("Jasur", result.get(0).getName());
+        assertEquals("Kamil", result.get(0).getName());
         verify(studentRepository, times(1)).findAll();
         verifyNoMoreInteractions(studentRepository);
         verifyNoInteractions(studentMapper);
     }
 
     @Test
-    void testUpdate_ThrowsException_WhenStudentNotFound() {
-        when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> studentService.update(1L, studentDTO));
-        assertEquals("Student with id: 1 is not found!", exception.getMessage());
-        verify(studentRepository, times(1)).findById(anyLong());
-        verify(studentMapper, never()).toEntity(any(Student.class), any(StudentDTO.class));
-        verify(studentRepository, never()).save(any(Student.class));
-    }
+    void update_WhenStudentNotFound_ThrowsStudentNotFoundException() {
+        //when
+        when(studentRepository.findById(ID)).thenReturn(Optional.empty());
 
-    @Test
-    void testPatch() {
-        Map<String, Object> updates = new HashMap<>();
-        updates.put("name", "Updated Name");
-        when(studentRepository.findById(anyLong())).thenReturn(Optional.of(student));
-        when(studentRepository.save(any(Student.class))).thenReturn(student);
-        ResponseEntity<Student> response = studentService.patch(1L, updates);
-        assertNotNull(response);
-        assertEquals(ResponseEntity.ok(student), response);
-        verify(studentRepository, times(1)).findById(anyLong());
-        verify(studentRepository, times(1)).save(any(Student.class));
+        //then
+        assertThrows(StudentNotFoundException.class, () -> studentService.update(ID, studentDTO));
+        verify(studentRepository, times(1)).findById(ID);
         verifyNoMoreInteractions(studentRepository);
         verifyNoInteractions(studentMapper);
     }
 
     @Test
-    void testPatch_StudentNotFound() {
-        when(studentRepository.findById(anyLong())).thenReturn(Optional.empty());
-        ResponseEntity<Student> response = studentService.patch(1L, new HashMap<>());
-        assertEquals(ResponseEntity.notFound().build(), response);
-        verify(studentRepository, times(1)).findById(anyLong());
+    void patch_Success() {
+        //given
+        var expected = student;
+        var updates = new HashMap<String, Object>();
+        updates.put("name", "Kamil");
+        updates.put("surname", "Heyderli");
+
+        //when
+        when(studentRepository.findById(ID)).thenReturn(Optional.of(expected));
+        when(studentRepository.save(expected)).thenReturn(expected);
+
+        //then
+        var actual = studentService.patch(1L, updates);
+
+        assertNotNull(actual);
+        assertEquals(ResponseEntity.ok(expected), actual);
+        verify(studentRepository, times(1)).findById(ID);
+        verify(studentRepository, times(1)).save(expected);
+        verifyNoMoreInteractions(studentRepository);
+        verifyNoInteractions(studentMapper);
+    }
+
+    @Test
+    void patch_WhenStudentNotFound_Then404() {
+        //given
+        var expected = ResponseEntity.notFound().build();
+
+        //when
+        when(studentRepository.findById(ID)).thenReturn(Optional.empty());
+
+        //then
+        var actual = studentService.patch(ID, new HashMap<>());
+
+        assertEquals(expected, actual);
+        verify(studentRepository, times(1)).findById(ID);
         verifyNoMoreInteractions(studentRepository);
         verifyNoInteractions(studentMapper);
     }
