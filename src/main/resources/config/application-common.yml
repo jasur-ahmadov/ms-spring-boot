@@ -1,2 +1,12 @@
 server:
-  port: 8080
+  port: ${SERVER_PORT:8080}
+
+has:
+  account: ${HAS_ACCOUNT:False}
+
+student:
+  names:
+    - James Barnes
+    - Arnold Schwarzenegger
+    - Billy Irish
+    - Michael Jackson
