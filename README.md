@@ -1,6 +1,6 @@
 * [Swagger-UI](http://localhost:8080/api/v1/ms17/swagger-ui/index.html)
 
-These additional references will help you:
+**These additional references will help you:**
 
 docker images ~ all docker images will be rendered<br/>
 docker container ls ~ all docker containers will be rendered<br/>
