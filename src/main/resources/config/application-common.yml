@@ -2,7 +2,7 @@ server:
   port: ${SERVER_PORT:8080}
 
 has:
-  account: ${HAS_ACCOUNT:False}
+  account: ${HAS_ACCOUNT:false}
 
 student:
   names:

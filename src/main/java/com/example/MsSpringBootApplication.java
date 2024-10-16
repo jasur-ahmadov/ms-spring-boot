@@ -16,7 +16,7 @@ public class MsSpringBootApplication implements CommandLineRunner {
     private final PropertiesConfig propertiesConfig;
 
     @Value("${has.account}")
-    private Boolean hasAccount;
+    private boolean hasAccount;
 
     public static void main(String[] args) {
         SpringApplication.run(MsSpringBootApplication.class, args);

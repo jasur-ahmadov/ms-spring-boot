@@ -2,11 +2,17 @@
 
 **These additional references will help you:**
 
-docker images ~ all docker images will be rendered<br/>
-docker container ls ~ all docker containers will be rendered<br/>
-docker exec -it {container_id} /bin/sh ~ use container<br/>
+docker images ~ see all docker images<br/>
+docker ps<br/>
+docker container ls ~ see all docker containers<br/>
+docker exec -it {container_id} /bin/sh ~ use specified container<br/>
 mysql -uroot -p2000 ~ connect to mysql<br/>
 show databases;<br/>
 use {database_name};<br/>
 show tables;<br/>
-select * from {table_name};
+select * from {table_name};<br/>
+
+docker build -t {image_name} . ~ builds an image from the current project<br/>
+docker run -d -e LOG_LEVEL=INFO -n {container_name} -p {container_port_no}:{localhost_port_no} {image_id} ~ runs project image locally<br/>
+
+docker logs {container_id} ~ view logs of a specific container
