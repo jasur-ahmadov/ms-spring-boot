@@ -3,6 +3,8 @@
 **These additional references will help you:**
 
 docker images ~ see all docker images<br/>
+docker pull mysql:latest<br/>
+docker run --name mysql -e MYSQL_ROOT_PASSWORD=2000 -d mysql:latest<br/>
 docker ps<br/>
 docker container ls ~ see all docker containers<br/>
 docker exec -it {container_id} /bin/sh ~ use specified container<br/>
