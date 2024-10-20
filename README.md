@@ -15,6 +15,6 @@ show tables;<br/>
 select * from {table_name};<br/>
 
 docker build -t {image_name} . ~ builds an image from the current project<br/>
-docker run -d -e LOG_LEVEL=INFO -n {container_name} -p {container_port_no}:{localhost_port_no} {image_id} ~ runs project image locally<br/>
+docker run -d -e LOG_LEVEL=INFO --name {container_name} -p {container_port_no}:{localhost_port_no} {image_id} ~ runs project image locally<br/>
 
 docker logs {container_id} ~ view logs of a specific container
