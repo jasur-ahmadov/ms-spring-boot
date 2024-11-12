@@ -1,4 +1,0 @@
-#logging:
-#  level:
-#    ROOT: ${LOG_LEVEL:WARN}
-#    com.example.logging: DEBUG

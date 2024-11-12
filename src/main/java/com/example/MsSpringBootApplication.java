@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.core.env.Environment;
 
 @SpringBootApplication
 @Slf4j
@@ -19,7 +20,15 @@ public class MsSpringBootApplication implements CommandLineRunner {
     private boolean hasAccount;
 
     public static void main(String[] args) {
-        SpringApplication.run(MsSpringBootApplication.class, args);
+        System.setProperty("spring.devtools.restart.enabled", "false");
+        SpringApplication app = new SpringApplication(MsSpringBootApplication.class);
+        Environment env = app.run(args).getEnvironment();
+        logApplicationStartup(env);
+    }
+
+    private static void logApplicationStartup(Environment env) {
+        String serverPort = env.getProperty("local.server.port");
+        log.info("Application is running in `{}` port, profile: {}", serverPort, env.getActiveProfiles());
     }
 
     @Override
