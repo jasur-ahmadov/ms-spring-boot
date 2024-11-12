@@ -14,10 +14,6 @@ import java.io.Serializable;
 @Builder
 public class StudentDTO implements Serializable {
 
-    private String temp;
-
-    private String jasur;
-
     @NotEmpty(message = "{error.studentNameNotDefined}")
     private String name;
 
