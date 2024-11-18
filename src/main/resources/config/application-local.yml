@@ -20,18 +20,28 @@ spring:
     hikari:
       username: root
       password: 2000
+#  datasource:
+#    type: com.zaxxer.hikari.HikariDataSource
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://localhost:3306/mydb?createDatabaseIfNotExist=true
+#    username: root
+#    password: 2000
 
 server:
-  servlet:
-    context-path: /api/v1/ms17
   port: ${SERVER_PORT:8080}
+  servlet:
+    context-path: /api/v1/sims
 
 has:
   account: ${HAS_ACCOUNT:false}
 
 student:
   names:
-    - James Barnes
+    - Jasur Ahmadov
     - Arnold Schwarzenegger
-    - Billy Irish
-    - Michael Jackson
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /api-docs

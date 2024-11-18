@@ -1,0 +1,35 @@
+version: '3.9'
+
+services:
+  ms_spring_boot_mysql:
+    image: mysql
+    restart: on-failure
+    ports:
+      - "3308:3306"
+    volumes:
+      - ms_volume:/var/lib/ms_db
+    networks:
+      - ms_network
+    environment:
+      MYSQL_ROOT_PASSWORD: '2000'
+      MYSQL_PASSWORD: '2000'
+      MYSQL_DATABASE: 'mydb'
+
+  ms_spring_boot:
+    image: jasur/msspringboot:1
+    restart: on-failure
+    ports:
+      - "9090:8080"
+    environment:
+      DB_CONNECTION_IP: 'ms_spring_boot_mysql'
+      DB_CONNECTION_PORT: 3306
+    networks:
+      - ms_network
+    depends_on:
+      - 'ms_spring_boot_mysql'
+
+volumes:
+  ms_volume:
+
+networks:
+  ms_network:

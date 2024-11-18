@@ -17,9 +17,9 @@ spring:
       password: 2000
 
 server:
-  servlet:
-    context-path: /api/v1/ms17
   port: ${SERVER_PORT:8080}
+  servlet:
+    context-path: /api/v1/sims
 
 has:
   account: ${HAS_ACCOUNT:false}
@@ -28,5 +28,3 @@ student:
   names:
     - James Barnes
     - Arnold Schwarzenegger
-    - Billy Irish
-    - Michael Jackson

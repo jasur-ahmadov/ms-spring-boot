@@ -17,4 +17,7 @@ select * from {table_name};<br/>
 docker build -t {image_name} . ~ builds an image from the current project<br/>
 docker run -d -e LOG_LEVEL=INFO --name {container_name} -p {container_port_no}:{localhost_port_no} {image_id} ~ runs project image locally<br/>
 
-docker logs {container_id} ~ view logs of a specific container
+docker logs {container_id} ~ view logs of a specific container<br/>
+
+docker compose up -d ~ run docker compose file<br/>
+docker compose down ~v  shut down the containers<br/>

@@ -12,4 +12,5 @@ import java.util.List;
 public class PropertiesConfig {
 
     private List<String> names;
+
 }
