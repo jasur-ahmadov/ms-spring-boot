@@ -20,4 +20,4 @@ docker run -d -e LOG_LEVEL=INFO --name {container_name} -p {container_port_no}:{
 docker logs {container_id} ~ view logs of a specific container<br/>
 
 docker compose up -d ~ run docker compose file<br/>
-docker compose down ~v  shut down the containers<br/
+docker compose down ~v  shut down the containers<br/>
